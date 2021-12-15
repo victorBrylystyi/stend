@@ -108,23 +108,24 @@ const loadAsset = (path) => {
 
 }
 
+const cleanUnusedAssets = () => {
+    const current = cache.get()
+    let keys = Object.keys(current)
+    for(let i = 0; i < keys.length; i++) {
+        let key = keys[i]
+        let currentAsset = current[key]
+        if(currentAsset.usageCount === 0) {
+            let difference = (Date.now() - currentAsset.lastUsedDate) / 60000
+            if(difference >= 15) {
+                delete current[key]
+            }
+        }
+    }
+} 
+
 export const useAssets = (paths) => {
 
     const [assetsToLoad, setAssetsToLoad] = useState(paths || [])
-  
-    const cleanUnusedAssets = () => {
-        let keys = Object.keys(cache.get())
-        for(let i = 0; i < keys.length; i++) {
-            let key = keys[i]
-            let currentAsset = cache.get()[key]
-            if(currentAsset.usageCount === 0) {
-                let difference = (Date.now() - currentAsset.lastUsedDate) / 60000
-                if(difference >= 15) {
-                    delete cache.get()[key]
-                }
-            }
-        }
-    } 
 
     /**
      * Fetch not fetched resources if 'paths' variable was changed
